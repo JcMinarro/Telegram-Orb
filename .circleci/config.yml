@@ -10,3 +10,8 @@ jobs:
     steps:
       - telegram/notify:
           message: "Hello Orb!!!"
+      - run:
+          name: Create a file
+          command: echo "Hello Orb!!!" > orbFile.txt
+      - telegram/sendfile:
+          file-path: orbFile.txt
