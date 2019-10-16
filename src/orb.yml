@@ -1,0 +1,13 @@
+version: 2.1
+orbs:
+description: A notification orb for Telegram. Send messages to your Telegram channels
+commands:
+  notify:
+    description: Notify a Telegram channel with a custom message
+    parameters:
+      message:
+        type: string
+    steps:
+      - run:
+          name: Telegram Notification
+          command: echo << parameters.message >>
