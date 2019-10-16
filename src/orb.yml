@@ -34,3 +34,40 @@ commands:
               exit 1
             fi
             curl -F text="<< parameters.message >>" "https://api.telegram.org/bot$<< parameters.telegram-bot-token >>/sendMessage?chat_id=<< parameters.to >>"
+
+  sendfile:
+    description: Send a file to a Telegram Channel
+    parameters:
+      message:
+        description: (Optional) Enter custom message
+        type: string
+        default: ""
+      telegram-bot-token:
+        description: Enter the name of the environment variable storing your Telegram Bot Token
+        type: env_var_name
+        default: TELEGRAM_BOT_TOKEN
+      to:
+        type: string
+        description: Enter either the destination 'Telegram chat id' or use the CircleCI UI to add it under the 'TELEGRAM_CHAT_ID' environment variable
+        default: ${TELEGRAM_CHAT_ID}
+      file-path:
+        type: string
+        description: Path of the file that will be sent
+    steps:
+      - run:
+          name: Telegram Send File
+          command: |
+            # Provide error if no telegram-bot-token is set and error. Otherwise continue
+            if [ -z "$<< parameters.telegram-bot-token >>" ]; then
+              echo "No TELEGRAM_BOT_TOKEN set"
+              echo "Please input your Telegram Bot Token value into the environment variable called '<< parameters.telegram-bot-token >>'"
+              exit 1
+            fi
+            # Provide error if no chat id is set and error. Otherwise continue
+            if [ -z "$<< parameters.to >>" ]; then
+              echo "No Telegram chat id set"
+              echo "Please input Telegram Chat id where the message will be sent"
+              echo "It could be configured as 'to' parameter or as an environment variable called 'TELEGRAM_CHAT_ID'"
+              exit 1
+            fi
+            curl -F caption="<< parameters.message >>" -F document=@<< parameters.file-path >> "https://api.telegram.org/bot$<< parameters.telegram-bot-token >>/sendDocument?chat_id=<< parameters.to >>"
