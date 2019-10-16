@@ -7,7 +7,18 @@ commands:
     parameters:
       message:
         type: string
+      telegram-bot-token:
+        description: Enter the name of the environment variable storing your Telegram Bot Token
+        type: env_var_name
+        default: TELEGRAM_BOT_TOKEN
     steps:
       - run:
           name: Telegram Notification
-          command: echo << parameters.message >>
+          command: |
+            # Provide error if no telegram-bot-token is set and error. Otherwise continue
+            if [ -z "$<< parameters.telegram-bot-token >>" ]; then
+              echo "No TELEGRAM_BOT_TOKEN set"
+              echo "Please input your Telegram Bot Token value into the environment variable called '<< parameters.telegram-bot-token >>'"
+              exit 1
+            fi
+            echo << parameters.message >>
