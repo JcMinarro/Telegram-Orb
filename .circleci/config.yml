@@ -1,0 +1,12 @@
+version: 2.1
+
+orbs:
+  telegram: jcminarro/telegram@dev:alpha
+
+jobs:
+  build:
+    docker:
+      - image: circleci/node
+    steps:
+      - telegram/notify:
+          message: "Hello Orb!!!"
