@@ -6,11 +6,16 @@ commands:
     description: Notify a Telegram channel with a custom message
     parameters:
       message:
+        description: Enter custom message
         type: string
       telegram-bot-token:
         description: Enter the name of the environment variable storing your Telegram Bot Token
         type: env_var_name
         default: TELEGRAM_BOT_TOKEN
+      to:
+        type: string
+        description: Enter either the destination 'Telegram chat id' or use the CircleCI UI to add it under the 'TELEGRAM_CHAT_ID' environment variable
+        default: ${TELEGRAM_CHAT_ID}
     steps:
       - run:
           name: Telegram Notification
@@ -21,4 +26,11 @@ commands:
               echo "Please input your Telegram Bot Token value into the environment variable called '<< parameters.telegram-bot-token >>'"
               exit 1
             fi
-            echo << parameters.message >>
+            # Provide error if no chat id is set and error. Otherwise continue
+            if [ -z "$<< parameters.to >>" ]; then
+              echo "No Telegram chat id set"
+              echo "Please input Telegram Chat id where the message will be sent"
+              echo "It could be configured as 'to' parameter or as an environment variable called 'TELEGRAM_CHAT_ID'"
+              exit 1
+            fi
+            curl -F text="<< parameters.message >>" "https://api.telegram.org/bot$<< parameters.telegram-bot-token >>/sendMessage?chat_id=<< parameters.to >>"
